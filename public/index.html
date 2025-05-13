@@ -6,13 +6,14 @@
     <link rel="icon" href="fav.ico" type="image/x-icon">
     <link rel="shortcut icon" href="fav.ico" type="image/x-icon">
     <title>TrashTalk - Angry Raccoon Chatbot</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Bangers&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..700&family=Bangers&display=swap" rel="stylesheet">
     <style>
         :root {
             --raccoon-red: #d32f2f;
             --raccoon-red-dark: #9a0007;
             --raccoon-black: #222222;
             --text-light: #f8f8f8;
+            --message-animation-duration: 0.3s;
         }
         
         * {
@@ -33,8 +34,10 @@
             padding: 20px 0;
             position: relative;
             overflow-x: hidden; /* Prevent horizontal scrolling */
+            transition: background-color 0.5s ease;
         }
         
+        /* Floating debris animation */
         body::before {
             content: "";
             position: fixed;
@@ -46,6 +49,67 @@
             z-index: 0;
         }
         
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' fill-opacity='0.05' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            z-index: -1;
+            animation: floatingDebris 60s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes floatingDebris {
+            from { background-position: 0 0; }
+            to { background-position: 100% 100%; }
+        }
+        
+        /* Dark/Light Mode */
+        body.day-mode {
+            --raccoon-red: #ff6b6b;
+            --raccoon-red-dark: #c23616;
+            --raccoon-black: #333333;
+            background-color: #e17055;
+        }
+        
+        body.day-mode::before {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .mode-toggle {
+            margin-left: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--raccoon-black);
+            border: 2px solid var(--raccoon-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .mode-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+        }
+        
+        .mode-toggle .icon {
+            font-size: 14px;
+            color: var(--raccoon-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        
         /* Decorative raccoon images on sides */
         .raccoon-left, .raccoon-right {
             position: fixed;
@@ -54,6 +118,7 @@
             width: 350px;
             height: auto;
             pointer-events: none; /* Don't intercept mouse events */
+            transition: transform 0.3s ease-out;
         }
         
         .raccoon-left {
@@ -63,6 +128,14 @@
         
         .raccoon-right {
             right: calc(50% - 900px); /* Position relative to center */
+        }
+        
+        .raccoon-left:hover, .raccoon-right:hover {
+            transform: translateY(-10px) scaleX(-1);
+        }
+        
+        .raccoon-right:hover {
+            transform: translateY(-10px);
         }
         
         /* Top bar styles - ENHANCED */
@@ -102,6 +175,11 @@
             justify-content: center;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+        
+        .top-bar-title .mini-logo:hover {
+            transform: rotate(10deg);
         }
         
         .top-bar-title .mini-logo img {
@@ -131,6 +209,7 @@
         .top-bar-link:hover {
             opacity: 1;
             transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.3);
         }
         
         .top-bar-link.x-icon {
@@ -172,6 +251,16 @@
             border-radius: 6px;
             animation: pulseBorder 2s infinite;
         }
+
+        .copy-icon {
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s;
+        }
+
+        .copy-icon:hover {
+            color: #fff;
+        }
         
         @keyframes pulseBorder {
             0%, 100% {
@@ -199,6 +288,11 @@
             z-index: 1;
             border-radius: 10px;
             overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .main-container:hover {
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
         }
         
         .header {
@@ -208,6 +302,7 @@
             padding: 1rem;
             border-bottom: 1px solid var(--raccoon-red);
             background-color: rgba(34, 34, 34, 0.95);
+            position: relative;
         }
         
         .logo {
@@ -226,7 +321,15 @@
             justify-content: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
         }
+        
+        .logo-img:hover {
+            transform: rotate(5deg);
+        }
+        
+        /* Raccoon eyes - REMOVED */
         
         .logo h1 {
             font-size: 3rem;
@@ -283,6 +386,14 @@
             padding: 1.5rem;
             margin: 0.8rem 0;
             position: relative;
+            animation: messageSlide var(--message-animation-duration) ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes messageSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .message-group.user {
@@ -299,7 +410,16 @@
             background-color: rgba(60, 60, 60, 0.6);
             padding: 12px 16px;
             border-radius: 18px 18px 0 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transform: perspective(800px) rotateX(2deg);
+            transition: all 0.2s;
         }
+        
+        .message-group.user .message-text:hover {
+            transform: perspective(800px) rotateX(0);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
         .message-group.bot {
             background-color: rgba(211, 47, 47, 0.1);
             position: relative;
@@ -313,6 +433,17 @@
             bottom: 0;
             width: 4px;
             background-color: var(--raccoon-red);
+        }
+        
+        .message-group.bot .message-text {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transform: perspective(800px) rotateX(-2deg);
+            transition: all 0.2s;
+        }
+        
+        .message-group.bot .message-text:hover {
+            transform: perspective(800px) rotateX(0);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .message-content {
@@ -334,6 +465,11 @@
             justify-content: center;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        
+        .avatar:hover {
+            transform: scale(1.1) rotate(5deg);
         }
         
         .bot .avatar {
@@ -345,6 +481,10 @@
             line-height: 1.6;
             font-size: 1rem;
         }
+        
+        /* Message meta info - REMOVED */
+        
+        /* Reaction system - REMOVED */
         
         .input-area {
             padding: 1.8rem 1.5rem;
@@ -374,13 +514,13 @@
             max-height: 120px;
             overflow-y: auto;
             line-height: 1.5;
-            transition: height 0.2s ease;
+            transition: height 0.2s ease, border-color 0.2s, box-shadow 0.2s;
         }
         
         #user-input:focus {
             outline: none;
             border-color: var(--raccoon-red);
-            box-shadow: 0 0 8px rgba(211, 47, 47, 0.3);
+            box-shadow: 0 0 12px rgba(211, 47, 47, 0.4);
         }
         
         #send-btn {
@@ -407,6 +547,11 @@
             width: 18px;
             height: 18px;
             fill: var(--raccoon-red);
+            transition: fill 0.2s;
+        }
+        
+        #send-btn:hover svg {
+            fill: var(--text-light);
         }
         
         .typing-indicator {
@@ -422,59 +567,46 @@
             opacity: 1;
         }
         
-        /* Raccoon paw prints animation */
-        .typing-indicator .paw-container {
+        /* Enhanced trash-themed typing indicator */
+        .typing-indicator .trash-container {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
         }
         
-        .typing-indicator .paw {
-            width: 15px;
-            height: 15px;
-            background-color: transparent;
+        .typing-indicator .trash-can {
+            width: 20px;
+            height: 20px;
             position: relative;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: pawAppear 2s infinite;
+            animation: shake 1s infinite;
         }
         
-        .typing-indicator .paw::before {
-            content: "🐾";
+        .typing-indicator .trash-can::before {
+            content: "🗑️";
             position: absolute;
-            font-size: 14px;
-            color: var(--raccoon-red);
+            font-size: 18px;
         }
         
-        .typing-indicator .paw:nth-child(1) {
-            animation-delay: 0s;
+        .typing-indicator .trash-lid {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            width: 20px;
+            height: 5px;
+            background-color: var(--raccoon-red);
+            border-radius: 2px;
+            animation: lidBounce 1s infinite;
         }
         
-        .typing-indicator .paw:nth-child(2) {
-            animation-delay: 0.4s;
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
         }
         
-        .typing-indicator .paw:nth-child(3) {
-            animation-delay: 0.8s;
-        }
-        
-        @keyframes pawAppear {
-            0% {
-                opacity: 0;
-                transform: translateY(10px) scale(0.8);
-            }
-            20% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            80% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-10px) scale(0.8);
-            }
+        @keyframes lidBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(-5deg); }
         }
         
         /* Media query for the side raccoons */
@@ -511,6 +643,24 @@
             opacity: 0.6;
             background-color: rgba(20, 20, 20, 0.95);
             border-top: 1px solid rgba(211, 47, 47, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 300%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--raccoon-red), transparent);
+            animation: footerGlow 4s infinite;
+        }
+        
+        @keyframes footerGlow {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
         
         @media (max-width: 600px) {
@@ -561,6 +711,10 @@
                 <img src="IconSmall.png" alt="Trash Talk">
             </div>
             TRASH TALK
+            <!-- Mode Toggle Button inside top bar title -->
+            <div class="mode-toggle" id="mode-toggle" title="Toggle Day/Night Mode">
+                <span class="icon">🌙</span>
+            </div>
         </div>
         <div class="top-bar-links">
             <a href="#" class="top-bar-link x-icon">
@@ -569,7 +723,17 @@
             <a href="#" class="top-bar-link pumpfun-icon">
                 <img src="pf-icon.png" alt="PumpFun" width="24" height="24">
             </a>
-            <span class="ca-soon">CA: SOON</span>
+            <span class="ca-soon">
+                <!-- JUST CHANGE THIS ONE LINE TO UPDATE BOTH DISPLAY AND COPY TEXT -->
+                <script>const STATUS_TEXT = "COMING SOON";</script>
+                CA: <script>document.write(STATUS_TEXT);</script>
+                <span class="copy-icon" onclick="navigator.clipboard.writeText(STATUS_TEXT); showCopied(this);" title="Copy to clipboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                    </svg>
+                </span>
+            </span>
         </div>
     </div>
     
@@ -601,10 +765,10 @@
         </div>
         
         <div class="typing-indicator" id="typing-indicator">
-            <div class="paw-container">
-                <div class="paw"></div>
-                <div class="paw"></div>
-                <div class="paw"></div>
+            <div class="trash-container">
+                <div class="trash-can">
+                    <div class="trash-lid"></div>
+                </div>
             </div>
         </div>
         
@@ -625,11 +789,44 @@
     </div>
     
     <script>
+        function showCopied(element) {
+            const originalTitle = element.getAttribute('title');
+            element.setAttribute('title', 'Copied!');
+            
+            setTimeout(() => {
+                element.setAttribute('title', originalTitle);
+            }, 2000);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const chatArea = document.getElementById('chat-area');
             const userInput = document.getElementById('user-input');
             const sendBtn = document.getElementById('send-btn');
             const typingIndicator = document.getElementById('typing-indicator');
+            const modeToggle = document.getElementById('mode-toggle');
+            
+            // Mode toggle functionality
+            modeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('day-mode');
+                const icon = this.querySelector('.icon');
+                if (document.body.classList.contains('day-mode')) {
+                    icon.textContent = '☀️';
+                } else {
+                    icon.textContent = '🌙';
+                }
+            });
+            
+            // Raccoon eyes that follow cursor
+            document.addEventListener('mousemove', function(e) {
+                const eyes = document.querySelectorAll('.raccoon-eye');
+                eyes.forEach(eye => {
+                    const rect = eye.getBoundingClientRect();
+                    const x = (rect.left + rect.width/2) - e.clientX;
+                    const y = (rect.top + rect.height/2) - e.clientY;
+                    const angle = Math.atan2(y, x) * 180 / Math.PI + 180;
+                    eye.style.transform = `rotate(${angle}deg)`;
+                });
+            });
 
             let conversationHistory = [{
                 role: "system",
@@ -715,6 +912,7 @@
                 
                 messageContent.appendChild(messageText);
                 messageGroup.appendChild(messageContent);
+                
                 chatArea.appendChild(messageGroup);
                 
                 // Scroll to bottom
@@ -829,6 +1027,16 @@
                     e.preventDefault();
                     sendMessage();
                 }
+            });
+            
+            // Copy button functionality for message options
+            document.querySelectorAll('.message-option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const messageText = this.closest('.message-group').querySelector('.message-text').textContent;
+                    navigator.clipboard.writeText(messageText);
+                    this.title = 'Copied!';
+                    setTimeout(() => { this.title = 'Copy'; }, 2000);
+                });
             });
         });
     </script>
