@@ -30,6 +30,9 @@ def claude_proxy():
         # Log the request for debugging (without sensitive info)
         print(f"Received request for model: {data.get('model', 'unknown')}")
         
+        print(f"System message: {data.get('system', 'None')}")
+        print(f"First few messages: {data.get('messages', [])[:2]}")
+
         # Forward to Anthropic API
         response = requests.post(
             'https://api.anthropic.com/v1/messages',
