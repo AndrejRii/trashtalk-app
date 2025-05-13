@@ -65,47 +65,48 @@
             right: calc(50% - 900px); /* Position relative to center */
         }
         
-        /* Top bar styles */
+        /* Top bar styles - ENHANCED */
         .top-bar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background-color: rgba(20, 20, 20, 0.95);
-            border-bottom: 3px solid var(--raccoon-red);
+            background-color: rgba(15, 15, 15, 0.97);
+            border-bottom: 4px solid var(--raccoon-red);
             z-index: 100;
-            padding: 10px 20px;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.6);
         }
         
         .top-bar-title {
             font-family: 'Bangers', cursive;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             color: var(--raccoon-red);
-            letter-spacing: 1px;
-            text-shadow: 1px 1px 0px var(--raccoon-black);
+            letter-spacing: 1.2px;
+            text-shadow: 2px 2px 0px var(--raccoon-black);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .top-bar-title .mini-logo {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             background-color: var(--raccoon-red);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
         
         .top-bar-title .mini-logo img {
-            width: 22px;
-            height: 22px;
+            width: 25px;
+            height: 25px;
         }
         
         .top-bar-links {
@@ -118,38 +119,69 @@
             color: var(--text-light);
             text-decoration: none;
             font-size: 0.9rem;
-            opacity: 0.8;
-            transition: opacity 0.2s, color 0.2s;
-            padding: 5px;
+            opacity: 0.9;
+            transition: all 0.2s;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 6px;
         }
         
         .top-bar-link:hover {
             opacity: 1;
+            transform: translateY(-2px);
         }
         
         .top-bar-link.x-icon {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            width: 30px;
-            height: 30px;
+            background-color: rgba(40, 40, 40, 0.6);
+            border-radius: 6px;
+            width: 38px;
+            height: 38px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .top-bar-link.x-icon:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(60, 60, 60, 0.8);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+        }
+        
+        .top-bar-link.pumpfun-icon {
+            background-color: rgba(40, 40, 40, 0.6);
+            border-radius: 6px;
+            width: 38px;
+            height: 38px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .top-bar-link.pumpfun-icon:hover {
+            background-color: rgba(60, 60, 60, 0.8);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
         }
         
         .ca-soon {
             color: var(--raccoon-red);
             font-family: 'Bangers', cursive;
-            letter-spacing: 1px;
-            font-size: 1rem;
-            opacity: 0.9;
-            padding: 5px 8px;
-            border: 1px dashed rgba(211, 47, 47, 0.5);
-            border-radius: 4px;
+            letter-spacing: 1.5px;
+            font-size: 1.2rem;
+            opacity: 1;
+            padding: 6px 12px;
+            background-color: rgba(20, 20, 20, 0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--raccoon-red-dark);
+            border-radius: 6px;
+            animation: pulseBorder 2s infinite;
+        }
+        
+        @keyframes pulseBorder {
+            0%, 100% {
+                border-color: var(--raccoon-red-dark);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                border-color: var(--raccoon-red);
+                box-shadow: 0 2px 10px rgba(211, 47, 47, 0.5);
+            }
         }
         
         /* Adjustments for the main container to account for top bar */
@@ -160,7 +192,7 @@
             max-width: 800px;
             height: 70vh;
             margin: 0 auto;
-            margin-top: 50px; /* Add space for top bar */
+            margin-top: 65px; /* Increased space for top bar */
             background-color: rgba(34, 34, 34, 0.9);
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
             padding: 0;
@@ -212,6 +244,37 @@
             display: flex;
             flex-direction: column;
             background-color: rgba(40, 40, 40, 0.8);
+        }
+        
+        /* Custom scrollbar styling for both chat area and user input */
+        .chat-area::-webkit-scrollbar,
+        #user-input::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+        }
+        
+        .chat-area::-webkit-scrollbar-track,
+        #user-input::-webkit-scrollbar-track {
+            background: rgba(20, 20, 20, 0.6); /* Dark track color */
+            border-radius: 4px;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb,
+        #user-input::-webkit-scrollbar-thumb {
+            background: var(--raccoon-red-dark); /* Use your theme's dark red */
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb:hover,
+        #user-input::-webkit-scrollbar-thumb:hover {
+            background: var(--raccoon-red); /* Lighter red on hover */
+        }
+        
+        /* Firefox scrollbar styling */
+        .chat-area,
+        #user-input {
+            scrollbar-width: thin; /* "auto" or "thin" */
+            scrollbar-color: var(--raccoon-red-dark) rgba(20, 20, 20, 0.6); /* thumb and track */
         }
         
         .message-group {
@@ -307,7 +370,7 @@
             color: var(--text-light);
             font-size: 1rem;
             resize: none;
-            height: 60px;
+            min-height: 60px;
             max-height: 120px;
             overflow-y: auto;
             line-height: 1.5;
@@ -317,6 +380,7 @@
         #user-input:focus {
             outline: none;
             border-color: var(--raccoon-red);
+            box-shadow: 0 0 8px rgba(211, 47, 47, 0.3);
         }
         
         #send-btn {
@@ -332,6 +396,11 @@
             width: 34px;
             height: 34px;
             border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        
+        #send-btn:hover {
+            transform: scale(1.1);
         }
         
         #send-btn svg {
@@ -456,29 +525,36 @@
             .main-container {
                 height: 90vh;
                 border-radius: 8px;
+                margin-top: 60px;
+            }
+            
+            .top-bar {
+                padding: 10px 15px;
             }
             
             .top-bar-title {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
             }
             
             .top-bar-links {
                 gap: 10px;
             }
             
-            .top-bar-link.x-icon {
-                width: 28px;
-                height: 28px;
+            .top-bar-link.x-icon,
+            .top-bar-link.pumpfun-icon {
+                width: 32px;
+                height: 32px;
             }
             
             .ca-soon {
-                font-size: 0.8rem;
+                font-size: 1rem;
+                padding: 4px 8px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Top Bar (New Addition) -->
+    <!-- Top Bar (Enhanced) -->
     <div class="top-bar">
         <div class="top-bar-title">
             <div class="mini-logo">
@@ -488,13 +564,13 @@
         </div>
         <div class="top-bar-links">
             <a href="#" class="top-bar-link x-icon">
-                <img src="x-icon.png" alt="X" width="20" height="20">
+                <img src="x-icon.png" alt="X" width="22" height="22">
             </a>
-            <a href="#" class="top-bar-link pumpfun-icon" style="display: none;">
-                <img src="pumpfun.png" alt="PumpFun" width="22" height="22">
+            <a href="#" class="top-bar-link pumpfun-icon">
+                <img src="pf-icon.png" alt="PumpFun" width="24" height="24">
             </a>
-            <span class="ca-soon" style="display: none;">CA: SOON</span>
-        </div>y
+            <span class="ca-soon">CA: SOON</span>
+        </div>
     </div>
     
     <!-- Decorative raccoon images on sides -->
@@ -565,21 +641,36 @@
             }];
 
             
-            // Auto-resize textarea with max 4 rows
+            // Improved auto-resize textarea with max 4 rows
             userInput.addEventListener('input', function() {
-                this.style.height = '60px'; // Reset height first
+                // Store current scroll position
+                const scrollTop = this.scrollTop;
                 
-                // Calculate how many rows we have
+                // Set height to auto to get the real scrollHeight
+                this.style.height = 'auto';
+                
+                // Get line height for calculations
                 const lineHeight = parseInt(getComputedStyle(this).lineHeight);
-                const rows = Math.floor(this.scrollHeight / lineHeight);
+                const paddingTop = parseInt(getComputedStyle(this).paddingTop);
+                const paddingBottom = parseInt(getComputedStyle(this).paddingBottom);
                 
-                // If 4 or fewer rows, adjust height to fit content
-                if (rows <= 4) {
+                // Calculate content height and rows
+                const contentHeight = this.scrollHeight - paddingTop - paddingBottom;
+                
+                // Calculate rows
+                const rows = Math.ceil(contentHeight / lineHeight);
+                
+                // Set height based on content, max 4 rows
+                if (rows <= 1) {
+                    this.style.height = '60px'; // Minimum height
+                } else if (rows <= 4) {
                     this.style.height = this.scrollHeight + 'px';
                 } else {
-                    // Otherwise cap at 4 rows and enable scrolling
-                    this.style.height = (lineHeight * 4) + 'px';
+                    this.style.height = (lineHeight * 4) + paddingTop + paddingBottom + 'px';
                 }
+                
+                // Restore scroll position
+                this.scrollTop = scrollTop;
             });
             
             // Sample responses for demo purposes (will be replaced with API calls)
@@ -646,7 +737,9 @@
                 // Add user message
                 addMessage(message, true);
                 userInput.value = '';
-                userInput.style.height = '60px'; // Reset height
+                
+                // Reset the height of the text area
+                userInput.style.height = '60px';
                 
                 // Show typing indicator
                 showTypingIndicator();
