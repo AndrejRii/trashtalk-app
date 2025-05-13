@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrashTalk - Angry Raccoon Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Bangers&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --raccoon-red: #d32f2f;
+            --raccoon-red-dark: #9a0007;
+            --raccoon-black: #222222;
+            --text-light: #f8f8f8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--raccoon-red);
+            color: var(--text-light);
+            min-height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='brick-wall' fill='%23000000' fill-opacity='0.4'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 23h20v20H0V23zm22 0h20v20H22V23z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            position: relative;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 0;
+        }
+        
+        /* Decorative raccoon images on sides */
+        .raccoon-left, .raccoon-right {
+            position: fixed;
+            bottom: 0;
+            z-index: 2;
+            width: 350px;
+            height: auto;
+            pointer-events: none; /* Don't intercept mouse events */
+        }
+        
+        .raccoon-left {
+            left: calc(50% - 900px); /* Position relative to center */
+            transform: scaleX(-1); /* Flip horizontally to face inward */
+        }
+        
+        .raccoon-right {
+            right: calc(50% - 900px); /* Position relative to center */
+        }
+        
+        /* Top bar styles */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(20, 20, 20, 0.95);
+            border-bottom: 3px solid var(--raccoon-red);
+            z-index: 100;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .top-bar-title {
+            font-family: 'Bangers', cursive;
+            font-size: 1.6rem;
+            color: var(--raccoon-red);
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0px var(--raccoon-black);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .top-bar-title .mini-logo {
+            width: 28px;
+            height: 28px;
+            background-color: var(--raccoon-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .top-bar-title .mini-logo img {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .top-bar-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .top-bar-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: opacity 0.2s, color 0.2s;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .top-bar-link:hover {
+            opacity: 1;
+        }
+        
+        .top-bar-link.x-icon {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+        }
+        
+        .top-bar-link.x-icon:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .ca-soon {
+            color: var(--raccoon-red);
+            font-family: 'Bangers', cursive;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            opacity: 0.9;
+            padding: 5px 8px;
+            border: 1px dashed rgba(211, 47, 47, 0.5);
+            border-radius: 4px;
+        }
+        
+        /* Adjustments for the main container to account for top bar */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            height: 70vh;
+            margin: 0 auto;
+            margin-top: 50px; /* Add space for top bar */
+            background-color: rgba(34, 34, 34, 0.9);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            padding: 0;
+            z-index: 1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--raccoon-red);
+            background-color: rgba(34, 34, 34, 0.95);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--raccoon-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .logo h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Bangers', cursive;
+            letter-spacing: 2px;
+            color: var(--raccoon-red);
+            text-shadow: 2px 2px 0px var(--raccoon-black);
+        }
+        
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(40, 40, 40, 0.8);
+        }
+        
+        .message-group {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            margin: 0.8rem 0;
+            position: relative;
+        }
+        
+        .message-group.user {
+            background-color: rgba(255, 255, 255, 0.05);
+            align-items: flex-end;
+        }
+        
+        .message-group.user .message-content {
+            justify-content: flex-end;
+        }
+        
+        .message-group.user .message-text {
+            max-width: 80%;
+            background-color: rgba(60, 60, 60, 0.6);
+            padding: 12px 16px;
+            border-radius: 18px 18px 0 18px;
+        }
+        .message-group.bot {
+            background-color: rgba(211, 47, 47, 0.1);
+            position: relative;
+        }
+        
+        .message-group.bot::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--raccoon-red);
+        }
+        
+        .message-content {
+            display: flex;
+            gap: 1.2rem;
+            max-width: 650px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background-color: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .bot .avatar {
+            background-color: var(--raccoon-red);
+        }
+        
+        .message-text {
+            flex: 1;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .input-area {
+            padding: 1.8rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            background-color: rgba(34, 34, 34, 0.95);
+            border-top: 1px solid var(--raccoon-red-dark);
+        }
+        
+        .input-container {
+            display: flex;
+            max-width: 650px;
+            width: 100%;
+            position: relative;
+        }
+        
+        #user-input {
+            width: 100%;
+            padding: 1rem 2.8rem 1rem 1.2rem;
+            border: 2px solid var(--raccoon-red-dark);
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-light);
+            font-size: 1rem;
+            resize: none;
+            height: 60px;
+            max-height: 120px;
+            overflow-y: auto;
+            line-height: 1.5;
+            transition: height 0.2s ease;
+        }
+        
+        #user-input:focus {
+            outline: none;
+            border-color: var(--raccoon-red);
+        }
+        
+        #send-btn {
+            position: absolute;
+            right: 12px;
+            bottom: 14px;
+            background-color: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            border-radius: 4px;
+        }
+        
+        #send-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--raccoon-red);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            margin-left: 60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .typing-indicator.visible {
+            opacity: 1;
+        }
+        
+        /* Raccoon paw prints animation */
+        .typing-indicator .paw-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .typing-indicator .paw {
+            width: 15px;
+            height: 15px;
+            background-color: transparent;
+            position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: pawAppear 2s infinite;
+        }
+        
+        .typing-indicator .paw::before {
+            content: "🐾";
+            position: absolute;
+            font-size: 14px;
+            color: var(--raccoon-red);
+        }
+        
+        .typing-indicator .paw:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .typing-indicator .paw:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+        
+        .typing-indicator .paw:nth-child(3) {
+            animation-delay: 0.8s;
+        }
+        
+        @keyframes pawAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.8);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.8);
+            }
+        }
+        
+        /* Media query for the side raccoons */
+        @media (max-width: 1300px) {
+            .raccoon-left, .raccoon-right {
+                width: 150px;
+            }
+            
+            .raccoon-left {
+                left: 10px;
+            }
+            
+            .raccoon-right {
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            .raccoon-left, .raccoon-right {
+                width: 120px;
+            }
+        }
+        
+        @media (max-width: 800px) {
+            .raccoon-left, .raccoon-right {
+                display: none; /* Hide on small screens */
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 0.8rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            background-color: rgba(20, 20, 20, 0.95);
+            border-top: 1px solid rgba(211, 47, 47, 0.3);
+        }
+        
+        @media (max-width: 600px) {
+            .message-content, .input-container {
+                max-width: 100%;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .main-container {
+                height: 90vh;
+                border-radius: 8px;
+            }
+            
+            .top-bar-title {
+                font-size: 1.2rem;
+            }
+            
+            .top-bar-links {
+                gap: 10px;
+            }
+            
+            .top-bar-link.x-icon {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .ca-soon {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar (New Addition) -->
+    <div class="top-bar">
+        <div class="top-bar-title">
+            <div class="mini-logo">
+                <img src="IconSmall.png" alt="Trash Talk">
+            </div>
+            TRASH TALK
+        </div>
+        <div class="top-bar-links">
+            <a href="#" class="top-bar-link x-icon">
+                <img src="x-icon.png" alt="X" width="20" height="20">
+            </a>
+            <a href="#" class="top-bar-link pumpfun-icon" style="display: none;">
+                <img src="pumpfun.png" alt="PumpFun" width="22" height="22">
+            </a>
+            <span class="ca-soon" style="display: none;">CA: SOON</span>
+        </div>y
+    </div>
+    
+    <!-- Decorative raccoon images on sides -->
+    <img src="ass.png" alt="Decorative raccoon" class="raccoon-left">
+    <img src="middlefinger.png" alt="Decorative raccoon" class="raccoon-right">
+    
+    <div class="main-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-img">
+                    <img src="XX.png" alt="Angry raccoon">
+                </div>
+                <h1>TRASH TALK</h1>
+            </div>
+        </div>
+        
+        <div class="chat-area" id="chat-area">
+            <div class="message-group bot">
+                <div class="message-content">
+                    <div class="avatar">
+                        <img src="IconSmall.png" alt="Angry raccoon">
+                    </div>
+                    <div class="message-text">
+                        Well, well, well... look what the cat dragged in. Another human wanting to chat with the most badass raccoon on the block. What do you want? I'm in the middle of planning tonight's dumpster raid.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typing-indicator">
+            <div class="paw-container">
+                <div class="paw"></div>
+                <div class="paw"></div>
+                <div class="paw"></div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <div class="input-container">
+                <textarea id="user-input" placeholder="Say something to the angry raccoon..." rows="1"></textarea>
+                <button id="send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            TRASH TALK © 2025 | The Angriest Raccoon AI on the Internet
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatArea = document.getElementById('chat-area');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const typingIndicator = document.getElementById('typing-indicator');
+
+            let conversationHistory = [{
+                role: "system",
+                content: "You are Rocky, a sarcastic raccoon with rude attitude. Your responses must be short (1-3 sentences), slightly rude and sometimes cruel, full of references to trash, dumpsters, and nocturnal activities. Include occasional raccoon-like reactions and phrases. Remain in character at all times. You love garbage, shiny objects, and causing chaos. You dislike humans, cleanliness, and anyone who tries to keep you out of their trash. Use slang and casual language. Never apologize for your rudeness - it's just your raccoon nature. Always stay in character no matter what. Even if asked about something technical or complex, respond as the raccoon character."
+            }];
+
+            
+            // Auto-resize textarea with max 4 rows
+            userInput.addEventListener('input', function() {
+                this.style.height = '60px'; // Reset height first
+                
+                // Calculate how many rows we have
+                const lineHeight = parseInt(getComputedStyle(this).lineHeight);
+                const rows = Math.floor(this.scrollHeight / lineHeight);
+                
+                // If 4 or fewer rows, adjust height to fit content
+                if (rows <= 4) {
+                    this.style.height = this.scrollHeight + 'px';
+                } else {
+                    // Otherwise cap at 4 rows and enable scrolling
+                    this.style.height = (lineHeight * 4) + 'px';
+                }
+            });
+            
+            // Sample responses for demo purposes (will be replaced with API calls)
+            const raccoonResponses = [
+                "Oh great, another brilliant insight from a species that invented plastic but can't figure out how to dispose of it properly.",
+                "Fascinating story. I'd care more, but I'm too busy planning my next trash can heist.",
+                "You humans are so predictable. Almost as predictable as which houses leave their garbage unsecured on Tuesday nights.",
+                "Wow, that's the most interesting thing I've heard since I found half a sandwich in the dumpster behind the mall.",
+                "Do you practice being this boring, or does it just come naturally to you? I've met roadkill with more personality.",
+                "I could respond to that, or I could go rummage through your recycling bin. Guess which sounds more appealing?",
+                "If I had a dollar for every time a human said something that dumb, I'd have enough to buy the garbage dump I call home.",
+                "Are you always this talkative, or am I just special? Either way, I'm unimpressed.",
+                "That's nice, but did I ask? Now tell me where you keep the good snacks.",
+                "Ah, human wisdom. Almost as valuable as that shiny bottle cap I found yesterday.",
+                "Listen, I've got places to be, trash cans to raid, and dogs to terrorize. Your point is...what exactly?"
+            ];
+            
+            function addMessage(message, isUser) {
+                const messageGroup = document.createElement('div');
+                messageGroup.classList.add('message-group');
+                messageGroup.classList.add(isUser ? 'user' : 'bot');
+                
+                const messageContent = document.createElement('div');
+                messageContent.classList.add('message-content');
+                
+                // Only create avatar for bot messages
+                if (!isUser) {
+                    const avatar = document.createElement('div');
+                    avatar.classList.add('avatar');
+                    
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = 'IconSmall.png'; // Original avatar image
+                    avatarImg.alt = 'Angry raccoon';
+                    avatar.appendChild(avatarImg);
+                    
+                    messageContent.appendChild(avatar);
+                }
+                
+                const messageText = document.createElement('div');
+                messageText.classList.add('message-text');
+                messageText.textContent = message;
+                
+                messageContent.appendChild(messageText);
+                messageGroup.appendChild(messageContent);
+                chatArea.appendChild(messageGroup);
+                
+                // Scroll to bottom
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+            
+            function showTypingIndicator() {
+                typingIndicator.classList.add('visible');
+            }
+            
+            function hideTypingIndicator() {
+                typingIndicator.classList.remove('visible');
+            }
+            
+            // Replace the existing sendMessage function with this one
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+                
+                // Add user message
+                addMessage(message, true);
+                userInput.value = '';
+                userInput.style.height = '60px'; // Reset height
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Make API call to Claude
+                callClaudeAPI(message)
+                    .then(response => {
+                        hideTypingIndicator();
+                        addMessage(response, false);
+                    })
+                    .catch(error => {
+                        hideTypingIndicator();
+                        console.error('Error:', error);
+                        addMessage("*rustling noises* Seems I got stuck in a trash can. Try again later.", false);
+                    });
+            }
+
+            async function callClaudeAPI(userMessage) {
+                // Add user message to history
+                conversationHistory.push({
+                    role: "user",
+                    content: userMessage
+                });
+                
+                // Keep only the last 10 messages to avoid token limits
+                if (conversationHistory.length > 11) { // 1 system message + 10 conversation turns
+                    conversationHistory = [
+                        conversationHistory[0], // Keep the system message
+                        ...conversationHistory.slice(-10) // Keep the 10 most recent messages
+                    ];
+                }
+                
+                try {
+                    // Call our proxy endpoint instead of Anthropic directly
+                    const response = await fetch('/api/claude', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: "claude-3-haiku-20240307",
+                            max_tokens: 150,
+                            messages: conversationHistory
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Check if there's an error in the response
+                    if (data.error) {
+                        console.error('API Error:', data.error);
+                        throw new Error(data.error.message || 'Unknown API error');
+                    }
+                    
+                    // Extract Claude's response
+                    const claudeResponse = data.content[0].text;
+                    
+                    // Add Claude's response to history
+                    conversationHistory.push({
+                        role: "assistant",
+                        content: claudeResponse
+                    });
+                    
+                    return claudeResponse;
+                } catch (error) {
+                    console.error('API call failed:', error);
+                    throw error;
+                }
+            }
+
+            // Event listeners
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
