@@ -46,7 +46,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
-            z-index: 0;
+            z-index: -2;
         }
         
         body::after {
@@ -117,8 +117,10 @@
             z-index: 2;
             width: 350px;
             height: auto;
-            pointer-events: none; /* Don't intercept mouse events */
-            transition: transform 0.3s ease-out;
+            pointer-events: auto; /* Change to auto to detect hover */
+            transition: transform 0.3s ease-out, filter 0.3s ease, width 0.3s ease;
+            filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0.5));
+            cursor: pointer;
         }
         
         .raccoon-left {
@@ -130,13 +132,18 @@
             right: calc(50% - 900px); /* Position relative to center */
         }
         
-        .raccoon-left:hover, .raccoon-right:hover {
-            transform: translateY(-10px) scaleX(-1);
+        .raccoon-left:hover {
+            transform: translateY(-15px) scaleX(-1);
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.7));
+            width: 360px; /* Make it grow larger */
+        }
+
+        .raccoon-right:hover {
+            transform: translateY(-15px);
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.7));
+            width: 360px; /* Make it grow larger */
         }
         
-        .raccoon-right:hover {
-            transform: translateY(-10px);
-        }
         
         /* Top bar styles - ENHANCED */
         .top-bar {
@@ -328,8 +335,31 @@
         .logo-img:hover {
             transform: rotate(5deg);
         }
-        
-        /* Raccoon eyes - REMOVED */
+
+        .logo-img::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid var(--raccoon-red);
+            opacity: 0;
+            transition: opacity 0.5s;
+            animation: pulseGlow 2s infinite;
+            pointer-events: none;
+        }
+
+        .logo-img:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+        }
         
         .logo h1 {
             font-size: 3rem;
@@ -413,6 +443,8 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transform: perspective(800px) rotateX(2deg);
             transition: all 0.2s;
+            background: linear-gradient(145deg, rgba(60,60,60,0.8), rgba(40,40,40,0.6));
+            border-right: 3px solid var(--raccoon-red-dark);
         }
         
         .message-group.user .message-text:hover {
@@ -436,7 +468,6 @@
         }
         
         .message-group.bot .message-text {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transform: perspective(800px) rotateX(-2deg);
             transition: all 0.2s;
         }
@@ -452,6 +483,33 @@
             max-width: 650px;
             margin: 0 auto;
             width: 100%;
+        }
+
+        .trash-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1; /* Changed from -1 to 0 */
+        }
+
+        .trash-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(211, 47, 47, 0.2);
+            border-radius: 50%;
+            animation: floatUp 15s linear infinite;
+            z-index: 0; /* Added to ensure visibility */
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
         
         .avatar {
@@ -804,6 +862,123 @@
             const sendBtn = document.getElementById('send-btn');
             const typingIndicator = document.getElementById('typing-indicator');
             const modeToggle = document.getElementById('mode-toggle');
+            const leftRaccoon = document.querySelector('.raccoon-left');
+            const rightRaccoon = document.querySelector('.raccoon-right');
+            let clickCount = 0;
+
+        function raccoonEasterEgg(event) {
+            clickCount++;
+            
+            if (clickCount >= 5) {
+                const isLeftRaccoon = event.currentTarget.classList.contains('raccoon-left');
+                const targetRaccoon = event.currentTarget;
+                
+                // Remove any existing animation classes first
+                targetRaccoon.classList.remove('raccoon-angry-left', 'raccoon-angry-right');
+                
+                // Force a reflow to restart animation
+                void targetRaccoon.offsetWidth;
+                
+                // Add appropriate animation class
+                if (isLeftRaccoon) {
+                    targetRaccoon.classList.add('raccoon-angry-left');
+                } else {
+                    targetRaccoon.classList.add('raccoon-angry-right');
+                }
+                
+                // Add the CSS for these animations if it doesn't exist
+                if (!document.getElementById('raccoon-animation-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'raccoon-animation-styles';
+                    style.textContent = `
+                        .raccoon-angry-left {
+                            animation: raccoonShakeLeft 0.5s ease-in-out, raccoonGlow 0.5s ease-in-out;
+                        }
+                        
+                        .raccoon-angry-right {
+                            animation: raccoonShakeRight 0.5s ease-in-out, raccoonGlow 0.5s ease-in-out;
+                        }
+                        
+                        @keyframes raccoonShakeLeft {
+                            0%, 100% { transform: translateX(0) scaleX(-1); }
+                            20% { transform: translateX(-15px) scaleX(-1); }
+                            40% { transform: translateX(15px) scaleX(-1); }
+                            60% { transform: translateX(-10px) scaleX(-1); }
+                            80% { transform: translateX(10px) scaleX(-1); }
+                        }
+                        
+                        @keyframes raccoonShakeRight {
+                            0%, 100% { transform: translateX(0); }
+                            20% { transform: translateX(-15px); }
+                            40% { transform: translateX(15px); }
+                            60% { transform: translateX(-10px); }
+                            80% { transform: translateX(10px); }
+                        }
+                        
+                        @keyframes raccoonGlow {
+                            0%, 100% { filter: drop-shadow(0 0 0 rgba(211, 47, 47, 0)); }
+                            50% { filter: drop-shadow(0 0 20px rgba(211, 47, 47, 0.8)); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                // Try to play sound effect (optional)
+                try {
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3');
+                    audio.volume = 0.3;
+                    audio.play().catch(e => console.log("Audio couldn't play, likely due to browser autoplay policy"));
+                } catch (e) {
+                    console.log("Sound effect couldn't be played");
+                }
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Use the existing callClaudeAPI function - this should work the same as your regular chat
+                const easterEggPrompt = "WHAT THE FUCK!? Stop poking me, you annoying human! I was in the middle of something important! Fine, since you found this secret, here's a special piece of trash from my collection.";
+                
+                callClaudeAPI(easterEggPrompt)
+                    .then(response => {
+                        hideTypingIndicator();
+                        addMessage(response, false);
+                    })
+                    .catch(error => {
+                        hideTypingIndicator();
+                        console.error('Error:', error);
+                        addMessage("*angry raccoon noises* WHAT THE FUCK?! Stop poking me, you hairless ape! Fine, have this shiny bottle cap I found. It's worth more than your entire existence. Now BACK OFF!", false);
+                    });
+                
+                // Remove the animation class after it finishes
+                setTimeout(() => {
+                    targetRaccoon.classList.remove('raccoon-angry-left', 'raccoon-angry-right');
+                }, 600);
+                
+                clickCount = 0;
+            }
+        }
+
+            leftRaccoon.addEventListener('click', raccoonEasterEgg);
+            rightRaccoon.addEventListener('click', raccoonEasterEgg);
+
+            function createTrashParticles() {
+                const container = document.createElement('div');
+                container.className = 'trash-particles';
+                document.body.appendChild(container);
+                
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'trash-particle';
+                    particle.style.left = Math.random() * 100 + 'vw';
+                    particle.style.width = Math.random() * 15 + 5 + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.opacity = Math.random() * 0.3 + 0.1;
+                    particle.style.animationDuration = Math.random() * 20 + 10 + 's';
+                    particle.style.animationDelay = Math.random() * 5 + 's';
+                    container.appendChild(particle);
+                }
+            }
+            createTrashParticles();
             
             // Mode toggle functionality
             modeToggle.addEventListener('click', function() {
@@ -814,18 +989,6 @@
                 } else {
                     icon.textContent = '🌙';
                 }
-            });
-            
-            // Raccoon eyes that follow cursor
-            document.addEventListener('mousemove', function(e) {
-                const eyes = document.querySelectorAll('.raccoon-eye');
-                eyes.forEach(eye => {
-                    const rect = eye.getBoundingClientRect();
-                    const x = (rect.left + rect.width/2) - e.clientX;
-                    const y = (rect.top + rect.height/2) - e.clientY;
-                    const angle = Math.atan2(y, x) * 180 / Math.PI + 180;
-                    eye.style.transform = `rotate(${angle}deg)`;
-                });
             });
 
             let conversationHistory = [{
